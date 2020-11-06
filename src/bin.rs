@@ -16,7 +16,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
-use math_lib::sigmoid;
+use math_lib::*;
 
 pub fn main() {
     println!("{}", sigmoid(3.0));

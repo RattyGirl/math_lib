@@ -16,8 +16,10 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
+use std::ops::*;
+use std::cmp::*;
 /*
-Static functions
+Static
 */
 pub fn sigmoid(x: f64) -> f64 {
     let one: f64 = 1.0;
@@ -25,34 +27,72 @@ pub fn sigmoid(x: f64) -> f64 {
 }
 
 /*
-Structs
-*/
+f32 Vectors
+ */
+#[derive(Debug, Copy, Clone)]
+pub struct Vector3f32 {
+    x: f32,
+    y: f32,
+    z: f32
+}
+#[allow(dead_code)]
+impl Vector3f32 {
+    fn new(x: f32, y: f32, z: f32) -> Vector3f32 {
+        Vector3f32 { x, y, z }
+    }
 
-/*
-Member Functions
-*/
+    pub fn dot(self, other: &Self) -> f32 {
+        (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
+    }
+
+    pub unsafe fn normalise(self) -> Vector3f32 {
+        let length: f32 = ((self.x*self.x) + (self.y*self.y) + (self.z*self.z)).sqrt();
+        Vector3f32 {
+            x: self.x/length,
+            y: self.y/length,
+            z: self.z/length
+        }
+    }
+}
+impl Add for Vector3f32 {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z
+        }
+    }
+}
+impl Sub for Vector3f32 {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z
+        }
+    }
+}
+impl PartialEq for Vector3f32 {
+    fn eq(&self, other: &Self) -> bool {
+        (self.x == other.x) & (self.y == other.y)
+    }
+}
+impl Eq for Vector3f32 {}
 
 /*
 Tests
  */
-fn prints_and_returns_10(a: i32) -> i32 {
-    println!("I got the value {}", a);
-    10
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn this_test_will_pass() {
-    //     let value = prints_and_returns_10(4);
-    //     assert_eq!(10, value);
-    // }
-    //
-    // #[test]
-    // fn this_test_will_fail() {
-    //     let value = prints_and_returns_10(8);
-    //     assert_eq!(5, value);
-    // }
+    #[test]
+    fn vector3f32_tests() {
+        let a = Vector3f32::new(1.0, 2.0, 3.0);
+        let b = Vector3f32::new(16.0, 23.0, 4.0);
+    }
 }
