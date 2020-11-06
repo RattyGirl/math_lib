@@ -28,8 +28,20 @@ pub fn sigmoid(x: f64) -> f64 {
 }
 
 /*
-f32 Vectors
+Vector3
  */
+type Vector3i8 = Vector3<i8>;
+type Vector3i16 = Vector3<i16>;
+type Vector3i32 = Vector3<i32>;
+type Vector3i64 = Vector3<i64>;
+type Vector3u8 = Vector3<u8>;
+type Vector3u16 = Vector3<u16>;
+type Vector3u32 = Vector3<u32>;
+type Vector3u64 = Vector3<u64>;
+type Vector3isize = Vector3<isize>;
+type Vector3f32 = Vector3<f32>;
+type Vector3f64 = Vector3<f64>;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3<T>
 {
@@ -39,7 +51,7 @@ pub struct Vector3<T>
 }
 
 impl<T> Vector3<T> {
-    fn new(x: T, y: T, z: T) -> Self {
+    pub fn new(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
     }
 }
@@ -118,16 +130,16 @@ mod tests {
 
     #[test]
     fn vector3_negation() {
-        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
-        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3f64 = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3f64 = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(-a, b);
     }
 
     #[test]
     fn vector3_dot() {
-        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
-        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3f64 = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3f64 = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a.dot(&b), -1.0 + -4.0 + -9.0);
         unsafe {
@@ -147,16 +159,16 @@ mod tests {
 
     #[test]
     fn vector3_add() {
-        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
-        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3f64 = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3f64 = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a + b, Vector3::new(0.0, 0.0, 0.0));
     }
 
     #[test]
     fn vector3_sub() {
-        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
-        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3f64 = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3f64 = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a - b, Vector3::new(2.0, 4.0, 6.0));
     }
