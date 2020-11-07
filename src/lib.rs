@@ -18,6 +18,7 @@
 */
 use std::ops::*;
 use std::cmp::*;
+use std::fmt::*;
 /*
 Static
 */
@@ -30,31 +31,38 @@ pub fn sigmoid(x: f64) -> f64 {
 f32 Vectors
  */
 #[derive(Debug, Copy, Clone)]
-pub struct Vector3 {
-    x: f32,
-    y: f32,
-    z: f32
+pub struct Vector3<T>
+{
+    x: T,
+    y: T,
+    z: T
 }
-#[allow(dead_code)]
-impl Vector3 {
-    fn new(x: f32, y: f32, z: f32) -> Self {
+
+impl<T> Vector3<T> {
+    fn new(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
     }
+}
 
-    pub fn dot(self, other: &Self) -> f32 {
+impl<T: Mul<Output = T> + Add<Output = T> + Copy> Vector3<T> {
+    pub fn dot(self, other: &Self) -> T {
         (self.x * other.x) + (self.y * other.y) + (self.z * other.z)
     }
+}
+impl<T: Mul<Output = T> + Div<Output = T> + Add<Output = T> + Copy> Vector3<T> where
+f64: From<T>
+{
+    pub unsafe fn normalise(self) -> Vector3<f64> {
+        // let converted_vector: Vector3<f64> = Vector3::new(self.x as f64, self.y as f64, self.z as f64);
+        let converted_vector: Vector3<f64> = Vector3::new(f64::from(self.x), f64::from(self.y), f64::from(self.z));
 
-    pub unsafe fn normalise(self) -> Self {
-        let length: f32 = ((self.x*self.x) + (self.y*self.y) + (self.z*self.z)).sqrt();
-        Self {
-            x: self.x/length,
-            y: self.y/length,
-            z: self.z/length
-        }
+        let length = ((converted_vector.x*converted_vector.x) + (converted_vector.y*converted_vector.y) + (converted_vector.z*converted_vector.z)).sqrt();
+
+        Vector3::new(converted_vector.x/length, converted_vector.y/length, converted_vector.z/length)
+
     }
 }
-impl Add for Vector3 {
+impl<T: Add<Output = T>> Add for Vector3<T> {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
@@ -65,7 +73,7 @@ impl Add for Vector3 {
         }
     }
 }
-impl Sub for Vector3 {
+impl<T: Sub<Output = T>> Sub for Vector3<T> {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
@@ -76,14 +84,14 @@ impl Sub for Vector3 {
         }
     }
 }
-impl PartialEq for Vector3 {
+impl<T: PartialEq> PartialEq for Vector3<T> {
     fn eq(&self, other: &Self) -> bool {
         (self.x == other.x) & (self.y == other.y)
     }
 }
-impl Eq for Vector3 {}
+impl<T: PartialEq> Eq for Vector3<T> {}
 
-impl Neg for Vector3 {
+impl<T: Neg<Output = T>> Neg for Vector3<T> {
     type Output = Self;
 
     fn neg(self) -> Self::Output {
@@ -103,19 +111,29 @@ mod tests {
     use super::*;
 
     #[test]
-    fn vector3_negation() {
+    fn vector3_build() {
         let a = Vector3::new(1.0, 2.0, 3.0);
-        let b = Vector3::new(-1.0, -2.0, -3.0);
+        assert_eq!(a, Vector3 {x: 1.0, y: 2.0, z: 3.0});
+    }
+
+    #[test]
+    fn vector3_negation() {
+        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(-a, b);
     }
 
     #[test]
     fn vector3_dot() {
-        let a = Vector3::new(1.0, 2.0, 3.0);
-        let b = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a.dot(&b), -1.0 + -4.0 + -9.0);
+        unsafe {
+            let a = a.normalise();
+            println!("{}, {}, {}", a.x, a.y, a.z);
+        }
     }
 
     #[test]
@@ -129,16 +147,16 @@ mod tests {
 
     #[test]
     fn vector3_add() {
-        let a = Vector3::new(1.0, 2.0, 3.0);
-        let b = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a + b, Vector3::new(0.0, 0.0, 0.0));
     }
 
     #[test]
     fn vector3_sub() {
-        let a = Vector3::new(1.0, 2.0, 3.0);
-        let b = Vector3::new(-1.0, -2.0, -3.0);
+        let a: Vector3<f32> = Vector3::new(1.0, 2.0, 3.0);
+        let b: Vector3<f32> = Vector3::new(-1.0, -2.0, -3.0);
 
         assert_eq!(a - b, Vector3::new(2.0, 4.0, 6.0));
     }
